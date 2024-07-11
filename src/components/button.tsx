@@ -25,6 +25,8 @@ interface IButtonProps {
   imagePath?: string;
   className?: string;
   imageClassName?: string;
+  leftImage?: JSX.Element;
+  rightImage?: JSX.Element;
 }
 
 // DefaultButton css style
@@ -32,7 +34,37 @@ interface IButtonProps {
 
 interface IBackButtonProps {
   top?: string;
+  customiseBackButtonLink?: string;
+  className?: string;
 }
+
+export const PurpleButton: React.FunctionComponent<IButtonProps> = (props) => {
+  const { text, height, width, action, navigation, style, leftImage, rightImage } = props;
+  const navigate = useNavigate();
+
+  const handleClick = (): void => {
+    if (action) {
+      action();
+    } else if (navigation) {
+      navigate(navigation);
+    }
+  };
+  return (
+    <div className="purple-button-container" style={style || { height: height, width: width }} onClick={handleClick}>
+      {leftImage}
+      <p className="inter-semi-bold-white-15px">{text}</p>
+      {rightImage}
+    </div>
+  );
+};
+
+export const ReferralNavToTakeSelfieButton: React.FunctionComponent<IButtonProps> = (props) => {
+  const { height, width, action } = props;
+
+  const cameraIcon = <img src={process.env.PUBLIC_URL + "/img/selfieToEarn/ic-selfie-1@1x.png"} className="referral-take-selfie-button-icon" />;
+
+  return <PurpleButton text="Take a Selfie and Start !" width={width} height={height} leftImage={cameraIcon} action={action} />;
+};
 
 export const ButtonWithNavigation: React.FunctionComponent<IButtonProps> = (props) => {
   const { text, height, width, navigation, style, imagePath, className, imageClassName } = props;
@@ -128,7 +160,8 @@ export const DisabledButton: React.FunctionComponent<IButtonProps> = (props) => 
 };
 
 export const BackButton: React.FunctionComponent<IBackButtonProps> = (props) => {
-  const { top } = props;
+  const { top, customiseBackButtonLink, className } = props;
+  const navigate = useNavigate();
 
   const customStyle: CSS.Properties = {
     alignItems: "flex-start",
@@ -142,14 +175,19 @@ export const BackButton: React.FunctionComponent<IBackButtonProps> = (props) => 
     top: top || "44px",
     zIndex: 9999,
   };
-  // isdofidjsoaf, difisdf
+
+  const handleBackButtonOnClick = (): void => {
+    if (customiseBackButtonLink) {
+      navigate(customiseBackButtonLink);
+      return;
+    }
+    navigate(-1);
+  };
 
   return (
-    <a href="javascript:history.back()">
-      <div className="icon-arrow-left" style={customStyle}>
-        <img className="icon-arrow-left-1" src={`${process.env.PUBLIC_URL}/img/connectSucceed/icon-arrow-left-8@1x.png`} alt="icon-arrow-left" />
-      </div>
-    </a>
+    <div className={className ?? "icon-arrow-left"} style={className ? undefined : customStyle} onClick={() => handleBackButtonOnClick()}>
+      <img className="icon-arrow-left-1" src={`${process.env.PUBLIC_URL}/img/connectSucceed/icon-arrow-left-8@1x.png`} alt="icon-arrow-left" />
+    </div>
   );
 };
 
@@ -254,19 +292,50 @@ export const GuestConnectWallectButton: React.FC<IButtonProps> = ({ height, widt
     boxShadow: "0px 15px 30px #1466CC29",
     borderRadius: "10px",
     gap: "10px",
-  }
+  };
 
   // const connectWalletButton: CSS.Properties = {
   //   dis
 
-  return <ButtonWithNavigation 
-            text="Connect Wallet" 
-            height={height} 
-            width={width} 
-            imagePath="img/wallet.svg" 
-            navigation="/" 
-            className={className ? "inter-semi-bold-white-15px " + className : "inter-semi-bold-white-15px"}
-            style={guestButtonStyle}
-            imageClassName="wallet-icon"
-          />;
+  return (
+    <ButtonWithNavigation
+      text="Connect Wallet"
+      height={height}
+      width={width}
+      imagePath="img/wallet.svg"
+      navigation="/"
+      className={className ? "inter-semi-bold-white-15px " + className : "inter-semi-bold-white-15px"}
+      style={guestButtonStyle}
+      imageClassName="wallet-icon"
+    />
+  );
+};
+
+export const DiscordVerificationButton: React.FC<IButtonProps> = ({ height, width, className }) => {
+  const guestButtonStyle: CSS.Properties = {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    height: height,
+    width: width,
+    background: "transparent linear-gradient(270deg, #8743FF 0%, ##4136F1 100%) 0% 0% no-repeat padding-box",
+    boxShadow: "0px 15px 30px #1466CC29",
+    borderRadius: "10px",
+    gap: "10px",
+  };
+  const CLIENT_ID = process.env.REACT_APP_DISCORD_CLIENT_ID!;
+  const REDIRECT_URI = process.env.REACT_APP_BETTERMI_ENTRANCE_POINT!;
+  // const connectWalletButton: CSS.Properties = {
+  //   dis
+
+  return (
+    <ButtonWithNavigation
+      text="Continue"
+      height={height}
+      width={width}
+      navigation={`https://discord.com/api/oauth2/authorize?client_id=${CLIENT_ID}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&response_type=code&scope=identify`}
+      className={className ? "inter-semi-bold-white-15px " + className : "inter-semi-bold-white-15px"}
+      style={guestButtonStyle}
+    />
+  );
 };

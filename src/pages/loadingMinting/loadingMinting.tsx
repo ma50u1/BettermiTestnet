@@ -15,6 +15,7 @@ import { isTodayHaveSelfieRecord } from "../../components/bmiCalculate";
 import { store } from "../../redux/reducer";
 import { profileSlice } from "../../redux/profile";
 import axios from "axios";
+import LoadingScreen from "../../template/loadingScreen/loadingScreen";
 
 interface ILoadingMintingProps {
   pathname: string;
@@ -131,32 +132,18 @@ const LoadingMinting: React.FunctionComponent<ILoadingMintingProps> = (props) =>
 
       setCount(100);
       setIsLoading(false);
+      store.dispatch(profileSlice.actions.setNFTId("error"));
       navigate("/generateFreeNFT", { state: { nftId: "error" } });
     } else {
       setCount(100);
       setIsLoading(false);
-      store.dispatch(profileSlice.actions.setNFTImageAddress(latestTransactionList[0]));
+      console.log("latestTransactionList[0] is",latestTransactionList[0]);
+      store.dispatch(profileSlice.actions.setNFTId(latestTransactionList[0]));
       navigate("/generateFreeNFT", { state: { nftId: latestTransactionList[0] } });
     }
   };
 
-  useEffect(() => {
-    if (nftLoaded.current === true) {
 
-    } else {
-      nftLoaded.current = true;
-      if (pathname === "/loadingBMIDaily") {
-        checkIfBMIcreated()
-          .catch((err) => {
-            console.error(err);
-          })
-        return;
-      }
-      checkIfNFTMinted().catch((err) => {
-        console.error(err);
-      });
-    }
-  }, []);
 
   useEffect(() => {
     const incrementInterval = 240000 / 96; // Time divided by the number of increments
@@ -188,6 +175,27 @@ const LoadingMinting: React.FunctionComponent<ILoadingMintingProps> = (props) =>
       clearInterval(timer);
     };
   }, []);
+
+
+    // main function
+    useEffect(() => {
+      if (nftLoaded.current === true) {
+  
+      } else {
+        nftLoaded.current = true;
+        if (pathname === "/loadingBMIDaily") {
+          checkIfBMIcreated()
+            .catch((err) => {
+              console.error(err);
+            })
+          return;
+        }
+        checkIfNFTMinted().catch((err) => {
+          console.error(err);
+        });
+      }
+    }, []);
+  
 
   // useEffect(() => {
   //   if (count >= 100) {
@@ -234,37 +242,7 @@ const LoadingMinting: React.FunctionComponent<ILoadingMintingProps> = (props) =>
   }, []);
   //ends here
 
-  const content: JSX.Element = (
-    <div className="screen">
-      <div className="bettermidapp-generate-free-nft-minting">
-        <div className="bg_2-JdJl2l">
-          <div className="mimi-loading">
-            <img className="mimi-loading-image" src="/img/loadingMinting/mimi-dancing-for-loadin-page.gif" alt="" />
-          </div>
-          <div className="x50-7ckAMs">{count}%</div>
-        </div>
-        {pathname === "/loadingBMIDaily"?
-        (
-          <div className="minting-JdJl2l inter-normal-white-15px">
-          Importing...
-          </div>
-        )
-        :
-        (
-        <div className="minting-JdJl2l inter-normal-white-15px">
-          Minting…
-          </div>
-          )}
-        <div className="reminder-text-1 inter-normal-white-15px">
-          Please wait patiently
-          <br />
-          and do not refresh the page
-        </div>
-      </div>
-    </div>
-  );
-
-  return <CenterLayout content={content} bgImg={false} />;
+  return<LoadingScreen pathname = {pathname} count = {count}></LoadingScreen>;
 };
 
 export default LoadingMinting;

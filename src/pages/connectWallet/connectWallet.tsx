@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import "./connectWallet.css";
 // import { LazyLoadImage } from 'react-lazy-load-image-component';
 import { CenterLayout } from "../../components/layout";
-import { ButtonWithAction, ButtonWithNavigation, DisabledButton } from "../../components/button";
+import { ButtonWithAction, ButtonWithNavigation, DisabledButton, PurpleButton } from "../../components/button";
 import { store } from "../../redux/reducer";
 import { walletSlice } from "../../redux/wallet";
 import { DeeplinkableWallet, GenericExtensionWallet } from "@signumjs/wallets";
@@ -54,11 +54,15 @@ export default function ConnectWallet(props: IConnectWalletProps) {
       }
       const equippedBettermiNft = await checkEquippedBettermiNFT(userInfo?.ledger, userInfo!.loginedAcctID);
 
-
       // situation:
       // all contract is created, but one or more contract still unconfirmed
       // or, not enqiuped NFT, then navigate to loadingMinting
-      if (userInfo!.openedBmiContract === true && userInfo!.openedNftContract === true || userInfo!.userBMIStorage.ats[0] != null && userInfo!.openedNftContract === true || userInfo!.openedBmiContract === true && userInfo!.userNftStorage.ats[0] != null || !equippedBettermiNft) {
+      if (
+        !equippedBettermiNft &&
+        ((userInfo!.openedBmiContract === true && userInfo!.openedNftContract === true) ||
+          (userInfo!.userBMIStorage.ats[0] != null && userInfo!.openedNftContract === true) ||
+          (userInfo!.openedBmiContract === true && userInfo!.userNftStorage.ats[0] != null))
+      ) {
         navigate("/loadingMinting");
         return;
       }
@@ -108,7 +112,7 @@ export default function ConnectWallet(props: IConnectWalletProps) {
     //   />
     // </div>
     // <div className="connectWallet-bg-img-container">
-      <>
+    <>
       {isLoading && <img className="connectWallet-bg-img" src={process.env.PUBLIC_URL + "/img/connectWallet/preview_logo.jpg"} />}
       <img
         className="connectWallet-bg-img"
@@ -116,7 +120,7 @@ export default function ConnectWallet(props: IConnectWalletProps) {
         onLoad={() => setIsLoading(false)}
         style={{ display: isLoading ? "none" : "inline-block" }}
       />
-      </>
+    </>
     // </div>
   );
 
@@ -127,11 +131,19 @@ export default function ConnectWallet(props: IConnectWalletProps) {
         {logo}
         <div className="connectWallet-option-container">
           <div id="connectWallet-button-container">
-            <ButtonWithAction
+            {/* <ButtonWithAction
               text="XT Wallet"
               action={() => {
                 userConnectWallet(appName, Wallet, Ledger, codeHashId, codeHashIdForNft, assetId, navigate);
               }} // TODO: add action to connect wallet
+              height="56px"
+              width="248px"
+            /> */}
+            <PurpleButton
+              text="XT Wallet"
+              action={() => {
+                userConnectWallet(appName, Wallet, Ledger, codeHashId, codeHashIdForNft, assetId, navigate);
+              }}
               height="56px"
               width="248px"
             />

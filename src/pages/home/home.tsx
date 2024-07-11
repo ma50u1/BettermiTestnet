@@ -26,8 +26,11 @@ import { getApiUrls } from "../../components/constants/constant";
 import { NFTDetailPopUpWindow } from "../../components/popupWindow";
 import HomeMissionList from "./horzontalScrollContainer";
 import UserInfoContainer from "./userInfoContainer";
+import ReferralSuccessPopupWindow from "./referralSuccessPopupWindow";
 
-interface IHomeProps {}
+interface IHomeProps {
+  pathname?: string;
+}
 
 const checkSlides = (isGuest: boolean) => {
   if (isGuest) {
@@ -66,6 +69,8 @@ const handleUnload = (e: any) => {
 };
 
 const Home: React.FunctionComponent<IHomeProps> = (props) => {
+  const pathname: string | undefined = props.pathname;
+  console.log("pathname is", pathname);
   const codeHashIdForNft = process.env.REACT_APP_NFT_MACHINE_CODE_HASH!;
   const tokenId = process.env.REACT_APP_TOKEN_ID!;
   const nftDistributor = process.env.REACT_APP_NFT_DISTRIBUTOR!;
@@ -90,6 +95,7 @@ const Home: React.FunctionComponent<IHomeProps> = (props) => {
   const [ipfsAddress, setIpfsAddress] = useState<string>("");
   const [isNFTiconLoading, setIsNFTiconLoading] = useState<boolean>(true);
   const [rewardPercentage, setRewardPercentage] = useState<string>("");
+  const [isPopUpReferralSuccessWindow, setIsPopUpReferralSuccessWindow] = useState<boolean>(true);
 
   const slides = checkSlides(isGuest);
 
@@ -127,7 +133,7 @@ const Home: React.FunctionComponent<IHomeProps> = (props) => {
   const nftIconCheck = useRef(false);
   useEffect(() => {
     // Function to fetch data from the APIc
-    if (nftIconCheck.current || isGuest) {
+    if (nftIconCheck.current || isGuest || pathname === "/referralGiveReward") {
       return;
     }
     nftIconCheck.current = true;
@@ -181,7 +187,7 @@ const Home: React.FunctionComponent<IHomeProps> = (props) => {
 
   const nftContractChecked = useRef(false);
   useEffect(() => {
-    if (nftContractChecked.current || isGuest) {
+    if (nftContractChecked.current || isGuest || pathname == "/referralGiveReward") {
       return;
     }
     nftContractChecked.current = true;
@@ -211,6 +217,17 @@ const Home: React.FunctionComponent<IHomeProps> = (props) => {
       >
         <div className="screen">
           <div className="bettermidapp-home-1">
+            {pathname === "/referralGiveReward"?
+            <ReferralSuccessPopupWindow 
+              isPopUpReferralSuccessWindow={true} 
+              setIsPopUpReferralSuccessWindow={setIsPopUpReferralSuccessWindow} 
+            />
+            :
+            <ReferralSuccessPopupWindow 
+            isPopUpReferralSuccessWindow={false} 
+            setIsPopUpReferralSuccessWindow={setIsPopUpReferralSuccessWindow} 
+          />
+}
             <Link to="/featureMissions">
               <div className="view-all-RoXPLo inter-medium-royal-blue-14px">See all</div>
             </Link>
